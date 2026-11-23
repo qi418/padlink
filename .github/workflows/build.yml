@@ -8,25 +8,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.11.1"
+
+      - name: Download Gradle 8.11.1
+        run: |
+          curl -fsSL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+          unzip -q -d /tmp /tmp/gradle.zip
+          echo "/tmp/gradle-8.11.1/bin" >> "$GITHUB_PATH"
+
       - name: Build release APK
         run: |
           set -e
+          echo "=== 仓库目录结构 ==="
+          find . -maxdepth 4 -type d | sort
+          echo "=== settings.gradle.kts 位置 ==="
+          find . -maxdepth 6 -name settings.gradle.kts
           DIR=""
           for f in $(find . -maxdepth 6 -name settings.gradle.kts); do
             d=$(dirname "$f")
             if grep -rq "writeStarted" "$d" 2>/dev/null; then DIR="$d"; break; fi
           done
-          if [ -z "$DIR" ]; then echo "没找到 Android 工程"; find . -maxdepth 4 -type d; exit 1; fi
-          echo "工程目录: $DIR"
+          if [ -z "$DIR" ]; then echo "没找到包含修复的 Android 工程"; exit 1; fi
+          echo "使用工程目录: $DIR"
           cd "$DIR"
-          gradle assembleRelease --no-daemon
+          gradle assembleRelease --no-daemon --stacktrace
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -39,6 +49,7 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+
       - name: Build unsigned archive
         run: |
           set -e
@@ -49,6 +60,7 @@ jobs:
           cd "$DIR"
           xcodebuild -project PadLinkHelper.xcodeproj -scheme PadLinkHelper -configuration Release -archivePath build/PadLinkHelper.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
           bash scripts/package_ipa.sh build/PadLinkHelper.xcarchive
+
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
