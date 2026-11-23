@@ -287,7 +287,7 @@ class BleCentralService : Service() {
                     connectSaved()
                 }
                 BluetoothDevice.BOND_NONE -> {
-                    if (Prefs.settings.value.deviceAddress == device.address) {
+                    if (Prefs.settings.value.deviceAddress == device?.address) {
                         Prefs.setDevice(null, null)
                     }
                 }
@@ -703,7 +703,8 @@ class BleCentralService : Service() {
             return
         }
         // 系统栈写 CCCD 0x0001；onDescriptorWrite 成功后再订阅 NotificationSource
-        if (!g.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)) {
+        val writeStarted: Boolean = g.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        if (!writeStarted) {
             subscribeFailed()
         }
     }
@@ -720,7 +721,8 @@ class BleCentralService : Service() {
             subscribeFailed()
             return
         }
-        if (!g.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)) {
+        val writeStarted: Boolean = g.writeDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        if (!writeStarted) {
             subscribeFailed()
         }
     }
