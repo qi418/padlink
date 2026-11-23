@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">PadLink</string>
-    <string name="service_label">PadLink 通知桥接服务</string>
-    <string name="channel_notifications">iPhone通知</string>
-    <string name="channel_service">PadLink 服务</string>
-</resources>

@@ -1,6 +1,0 @@
-<resources>
-    <!-- Compose 单 Activity：框架主题仅负责窗口背景与 NoActionBar -->
-    <style name="Theme.PadLink" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/window_background</item>
-    </style>
-</resources>
