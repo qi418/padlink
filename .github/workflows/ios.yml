@@ -1,0 +1,41 @@
+name: Build iOS IPA (unsigned)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios:
+    name: Build IPA
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show structure
+        run: ls -R ios | head -50
+
+      - name: Build unsigned archive
+        run: |
+          set -e
+          cd ios
+          xcodebuild -project PadLinkHelper.xcodeproj \
+            -scheme PadLinkHelper \
+            -configuration Release \
+            -archivePath build/PadLinkHelper.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          set -e
+          cd ios
+          bash scripts/package_ipa.sh build/PadLinkHelper.xcarchive
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: PadLinkHelper-unsigned-IPA
+          path: ios/*.ipa
+          if-no-files-found: error
