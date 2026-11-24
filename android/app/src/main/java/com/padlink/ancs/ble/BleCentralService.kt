@@ -276,9 +276,9 @@ class BleCentralService : Service() {
             when (intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)) {
                 BluetoothDevice.BOND_BONDED -> {
                     // 配对成功才保存地址（iOS 地址随机化：扫描到的地址不可靠）
-                    val address = device.address ?: return
+                    val address = device?.address ?: return
                     val name = (try {
-                        device.name
+                        device?.name
                     } catch (e: Exception) {
                         null
                     }) ?: "iPhone"

@@ -136,7 +136,7 @@ class AncsSession(
             queue.removeFirstOrNull() ?: return
         }
         inFlight = true
-        controlPoint.writeType = BluetoothGattCharacteristic.WRITE_TYPE_REQUEST
+        controlPoint.writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
         controlPoint.value = next
         if (!writeControlPoint(controlPoint)) {
             inFlight = false
